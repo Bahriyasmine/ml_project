@@ -8,7 +8,9 @@ pipeline {
         stage('Installation des dépendances') {
             steps {
                 echo '📦 Installation des dépendances...'
-                sh 'make install'
+                sh """
+                    ${PIP} install --timeout=120 --retries 5 -i https://pypi.org/simple -r requirements.txt || sleep 10 && ${PIP} install --timeout=180 --retries 10 -i https://pypi.org/simple -r requirements.txt
+                """
             }
         }
         stage('Préparation des données') {
