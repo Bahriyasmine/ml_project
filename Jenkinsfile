@@ -17,15 +17,21 @@ pipeline {
                 sh 'make prepare'
             }
         }
-        stage('Entraînement du modèle') {
+        stage('Phase 1: Entraînement du modèle') {
             steps {
-                echo '🤖 Entraînement du modèle...'
-                sh 'make train'
+                echo '🤖 Entraînement du modèle phase 1...'
+                sh 'make train_phase1'
             }
         }
-        stage('Évaluation du modèle') {
+        stage('Phase 2: Affinement du modèle') {
             steps {
-                echo '📊 Évaluation du modèle...'
+                echo '⚙️ Affinement du modèle phase 2...'
+                sh 'make train_phase2'
+            }
+        }
+        stage('Phase 3: Evaluation du modèle') {
+            steps {
+                echo '📊 Évaluation du modèle phase 3...'
                 sh 'make evaluate'
             }
         }
