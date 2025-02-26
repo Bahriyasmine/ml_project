@@ -1,66 +1,64 @@
 pipeline {
     agent any
-    environment {
-        PYTHON = 'python3'
-        PIP = 'pip'
-    }
+
     stages {
         stage('Installation des dépendances') {
             steps {
                 echo '📦 Installation des dépendances...'
-                sh """
-                    ${PIP} install --timeout=120 --retries 5 -i https://pypi.org/simple -r requirements.txt || sleep 10 && ${PIP} install --timeout=180 --retries 10 -i https://pypi.org/simple -r requirements.txt
-                """
+                sh 'make install'
             }
         }
+
         stage('Préparation des données') {
             steps {
-                echo '⚙️ Préparation des données...'
+                echo '📊 Préparation des données...'
                 sh 'make prepare'
             }
         }
+
         stage('Phase 1: Entraînement du modèle') {
             steps {
-                echo '🤖 Entraînement du modèle phase 1...'
-                sh 'make train_phase1'
+                echo '🤖 Entraînement du modèle...'
+                sh 'make train'  // Updated from 'train_phase1' to 'train'
             }
         }
-        stage('Phase 2: Affinement du modèle') {
+
+        stage('Évaluation du modèle') {
             steps {
-                echo '⚙️ Affinement du modèle phase 2...'
-                sh 'make train_phase2'
-            }
-        }
-        stage('Phase 3: Evaluation du modèle') {
-            steps {
-                echo '📊 Évaluation du modèle phase 3...'
+                echo '📈 Évaluation du modèle...'
                 sh 'make evaluate'
             }
         }
+
         stage('Vérifications (Lint/Sécurité)') {
             parallel {
                 stage('💡 Linting') {
                     steps {
+                        echo '🔍 Vérification de la qualité du code...'
                         sh 'make lint'
                     }
                 }
+
                 stage('🔐 Sécurité') {
                     steps {
+                        echo '🔎 Vérification de la sécurité du code...'
                         sh 'make security'
                     }
                 }
             }
         }
+
         stage('Nettoyage') {
             steps {
-                echo '🧹 Nettoyage des fichiers temporaires...'
+                echo '🧹 Nettoyage des fichiers inutiles...'
                 sh 'make clean'
             }
         }
     }
+
     post {
         success {
-            echo '✅ Pipeline exécuté avec succès !'
+            echo '✅ Pipeline terminé avec succès !'
         }
         failure {
             echo '❌ Le pipeline a échoué.'
