@@ -18,35 +18,35 @@ pipeline {
         stage('Prepare Data') {
             steps {
                 echo '📊 Preparing data...'
-                sh 'python main.py --prepare'
+                sh 'python3 main.py --prepare' // Updated to python3
             }
         }
 
         stage('Train Model') {
             steps {
                 echo '🤖 Training model...'
-                sh 'python main.py --train'
+                sh 'python3 main.py --train' // Updated to python3
             }
         }
 
         stage('Evaluate Model') {
             steps {
                 echo '📈 Evaluating model...'
-                sh 'python main.py --evaluate'
+                sh 'python3 main.py --evaluate' // Updated to python3
             }
         }
 
         stage('Save Model') {
             steps {
                 echo '💾 Saving model...'
-                sh 'python main.py --save'
+                sh 'python3 main.py --save' // Updated to python3
             }
         }
 
         stage('Load Model & Evaluate') {
             steps {
                 echo '🔄 Loading and evaluating model...'
-                sh 'python main.py --load'
+                sh 'python3 main.py --load' // Updated to python3
             }
         }
 
@@ -55,19 +55,19 @@ pipeline {
                 stage('Linting') {
                     steps {
                         echo '🔍 Checking code quality...'
-                        sh 'flake8 .'
+                        sh 'flake8 .' // This assumes flake8 is installed
                     }
                 }
 
                 stage('Security') {
                     steps {
                         echo '🔐 Checking security...'
-                        sh 'bandit -r .'
+                        sh 'bandit -r .' // This assumes bandit is installed
                     }
                 }
             }
         }
-        
+
         stage('Cleanup') {
             steps {
                 echo '🧹 Cleaning up...'
