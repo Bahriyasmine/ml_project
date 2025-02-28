@@ -1,67 +1,87 @@
 pipeline {
     agent any
 
+    environment {
+        // Set any environment variables here if needed
+        CSV_FILE = "Churn_Modelling.csv"
+        MODEL_FILE = "model.joblib"
+    }
+
     stages {
-        stage('Installation des dépendances') {
+        stage('Install Dependencies') {
             steps {
-                echo '📦 Installation des dépendances...'
-                sh 'make install'
+                echo '📦 Installing dependencies...'
+                sh 'pip install -r requirements.txt'
             }
         }
 
-        stage('Préparation des données') {
+        stage('Prepare Data') {
             steps {
-                echo '📊 Préparation des données...'
-                sh 'make prepare'
+                echo '📊 Preparing data...'
+                sh 'python main.py --prepare'
             }
         }
 
-        stage('Phase 1: Entraînement du modèle') {
+        stage('Train Model') {
             steps {
-                echo '🤖 Entraînement du modèle...'
-                sh 'make train'  // Updated from 'train_phase1' to 'train'
+                echo '🤖 Training model...'
+                sh 'python main.py --train'
             }
         }
 
-        stage('Évaluation du modèle') {
+        stage('Evaluate Model') {
             steps {
-                echo '📈 Évaluation du modèle...'
-                sh 'make evaluate'
+                echo '📈 Evaluating model...'
+                sh 'python main.py --evaluate'
             }
         }
 
-        stage('Vérifications (Lint/Sécurité)') {
+        stage('Save Model') {
+            steps {
+                echo '💾 Saving model...'
+                sh 'python main.py --save'
+            }
+        }
+
+        stage('Load Model & Evaluate') {
+            steps {
+                echo '🔄 Loading and evaluating model...'
+                sh 'python main.py --load'
+            }
+        }
+
+        stage('Post-Training Checks') {
             parallel {
-                stage('💡 Linting') {
+                stage('Linting') {
                     steps {
-                        echo '🔍 Vérification de la qualité du code...'
-                        sh 'make lint'
+                        echo '🔍 Checking code quality...'
+                        sh 'flake8 .'
                     }
                 }
 
-                stage('🔐 Sécurité') {
+                stage('Security') {
                     steps {
-                        echo '🔎 Vérification de la sécurité du code...'
-                        sh 'make security'
+                        echo '🔐 Checking security...'
+                        sh 'bandit -r .'
                     }
                 }
             }
         }
-
-        stage('Nettoyage') {
+        
+        stage('Cleanup') {
             steps {
-                echo '🧹 Nettoyage des fichiers inutiles...'
-                sh 'make clean'
+                echo '🧹 Cleaning up...'
+                sh 'rm -rf __pycache__'
             }
         }
     }
 
     post {
         success {
-            echo '✅ Pipeline terminé avec succès !'
+            echo '✅ Pipeline completed successfully!'
         }
         failure {
-            echo '❌ Le pipeline a échoué.'
+            echo '❌ Pipeline failed.'
         }
     }
 }
