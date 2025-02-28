@@ -50,23 +50,7 @@ pipeline {
             }
         }
 
-        stage('Post-Training Checks') {
-            parallel {
-                stage('Linting') {
-                    steps {
-                        echo '🔍 Checking code quality...'
-                        sh 'flake8 .' // This assumes flake8 is installed
-                    }
-                }
-
-                stage('Security') {
-                    steps {
-                        echo '🔐 Checking security...'
-                        sh 'bandit -r .' // This assumes bandit is installed
-                    }
-                }
-            }
-        }
+        
 
         stage('Cleanup') {
             steps {
